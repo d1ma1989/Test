@@ -9,11 +9,14 @@ public class SceneController : MonoBehaviour {
 	[SerializeField] private UIScrollView _scrollView;
 	[SerializeField] private UIWrapContent _uiWrapContent;
 	[SerializeField] private Transform _poolGOTransform;
+	[SerializeField] private AudioSource _audioSource;
 
 	private int _screenWidth;
 	private int _screenHeight;
 
 	private GameObject _cardPrefab;
+
+	private bool _deckWasDragged;
 
 	private static readonly List<GameObject> _activeCardsObjects = new List<GameObject>();
 	private static readonly List<GameObject> _cardsPool = new List<GameObject>();
@@ -32,6 +35,15 @@ public class SceneController : MonoBehaviour {
 
 	// Checking resolution changes
 	private void Update() {
+		if (_scrollView.isDragging) {
+			_deckWasDragged = true;
+		}
+
+		if ( _deckWasDragged && !_scrollView.isDragging && !_audioSource.isPlaying) {
+			_audioSource.Play();
+			_deckWasDragged = false;
+		}
+
 		if (_screenWidth == Screen.width && _screenHeight == Screen.height) {
 			return;
 		}
