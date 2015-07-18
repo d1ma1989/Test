@@ -17,6 +17,8 @@ public class SceneController : MonoBehaviour {
 	private GameObject _cardPrefab;
 
 	private bool _deckWasDragged;
+	private Vector3 _scrollViewPos;
+	private Transform _scrollViewTransform;
 
 	private static readonly List<GameObject> _activeCardsObjects = new List<GameObject>();
 	private static readonly List<GameObject> _cardsPool = new List<GameObject>();
@@ -24,6 +26,7 @@ public class SceneController : MonoBehaviour {
 	private void Start() {
 		_cardPrefab = Resources.Load<GameObject>("Card");
 		_uiWrapContent.onInitializeItem += InitCard;
+		_scrollViewTransform = _scrollView.transform;
 	}
 
 	/// <summary>
@@ -33,17 +36,22 @@ public class SceneController : MonoBehaviour {
 		go.GetComponent<Card>().Init(realIndex);
 	}
 
-	// Checking resolution changes
 	private void Update() {
-		if (_scrollView.isDragging) {
+		// Check for dragging deck
+		if (_scrollView.isDragging && !_deckWasDragged) {
 			_deckWasDragged = true;
 		}
 
-		if ( _deckWasDragged && !_scrollView.isDragging && !_audioSource.isPlaying) {
-			_audioSource.Play();
-			_deckWasDragged = false;
+		if (_deckWasDragged && !_scrollView.isDragging) {
+			if (Vector2.Distance(_scrollViewPos, _scrollViewTransform.localPosition) > 10f) {
+				_audioSource.Play();
+				_deckWasDragged = false;
+			}
 		}
 
+		_scrollViewPos = _scrollViewTransform.localPosition;
+
+		// Checking resolution changes
 		if (_screenWidth == Screen.width && _screenHeight == Screen.height) {
 			return;
 		}
@@ -51,6 +59,7 @@ public class SceneController : MonoBehaviour {
 		_screenWidth = Screen.width;
 
 		OnResolutionChanged();
+		_scrollView.Press(true);
 	}
 
 	/// <summary>
