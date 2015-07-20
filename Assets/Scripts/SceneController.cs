@@ -66,7 +66,7 @@ public class SceneController : MonoBehaviour {
 	/// Resets size of widgets to match the new screen resolution
 	/// </summary>
 	private void OnResolutionChanged() {
-		_bgSprite.ResetAnchors();
+		_bgSprite.ResetAndUpdateAnchors();
 		_innerBgSprite.width = _bgSprite.width / 2;
 		_scrollView.panel.ResetAnchors();
 		_scrollView.panel.Update();
